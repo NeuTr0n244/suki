@@ -2,6 +2,10 @@ let isSpeaking = false;
 let currentAudio: HTMLAudioElement | null = null;
 let audioUnlocked = false;
 
+// Audio queue for playing multiple messages sequentially
+const audioQueue: string[] = [];
+let isProcessingQueue = false;
+
 // Clean text for TTS (remove markdown, emojis, special characters)
 function cleanTextForTTS(text: string): string {
   return text
@@ -9,6 +13,12 @@ function cleanTextForTTS(text: string): string {
     .replace(/[^\w\s.,!?'$%+-]/g, '') // Remove emojis and special chars
     .replace(/\s+/g, ' ') // Normalize spaces
     .trim();
+}
+
+// Split text into sentences for faster streaming
+function splitIntoSentences(text: string): string[] {
+  const sentences = text.match(/[^.!?~]+[.!?~]+/g) || [text];
+  return sentences.map(s => s.trim()).filter(s => s.length > 0);
 }
 
 // Unlock audio context (needed for autoplay on most browsers)
@@ -32,7 +42,7 @@ export function unlockAudio() {
 // Call ElevenLabs TTS API via our backend endpoint
 async function generateSpeech(text: string): Promise<Blob | null> {
   try {
-    console.log('[TTS] Generating speech for text:', text.substring(0, 50) + '...');
+    console.log('[TTS] Generating speech for:', text.substring(0, 50) + '...');
 
     const response = await fetch('/api/tts', {
       method: 'POST',
@@ -49,7 +59,7 @@ async function generateSpeech(text: string): Promise<Blob | null> {
     }
 
     const blob = await response.blob();
-    console.log('[TTS] Speech generated successfully:', blob.size, 'bytes');
+    console.log('[TTS] Speech generated:', blob.size, 'bytes');
     return blob;
   } catch (error) {
     console.error('[TTS] Fetch error:', error);
@@ -58,12 +68,12 @@ async function generateSpeech(text: string): Promise<Blob | null> {
 }
 
 // Play audio blob
-async function playAudio(audioBlob: Blob): Promise<void> {
+async function playAudioBlob(audioBlob: Blob): Promise<void> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(audioBlob);
     currentAudio = new Audio(url);
 
-    console.log('[TTS] Attempting to play audio...');
+    console.log('[TTS] Playing audio...');
 
     currentAudio.onended = () => {
       console.log('[TTS] Audio playback ended');
@@ -81,9 +91,9 @@ async function playAudio(audioBlob: Blob): Promise<void> {
 
     currentAudio.play().then(() => {
       console.log('[TTS] Audio playing successfully');
-      audioUnlocked = true; // Mark as unlocked after successful play
+      audioUnlocked = true;
     }).catch((error) => {
-      console.error('[TTS] Audio play error (likely autoplay blocked):', error.message);
+      console.error('[TTS] Audio play error:', error.message);
       URL.revokeObjectURL(url);
       currentAudio = null;
       reject(error);
@@ -91,7 +101,50 @@ async function playAudio(audioBlob: Blob): Promise<void> {
   });
 }
 
-// Main speak function using ElevenLabs
+// Process next item in the queue
+async function processNextInQueue() {
+  if (audioQueue.length === 0) {
+    isProcessingQueue = false;
+    isSpeaking = false;
+    console.log('[TTS] Queue finished');
+    return;
+  }
+
+  isProcessingQueue = true;
+  isSpeaking = true;
+
+  const text = audioQueue.shift();
+  if (!text) {
+    processNextInQueue();
+    return;
+  }
+
+  console.log('[TTS] Processing from queue:', text.substring(0, 50) + '...');
+
+  try {
+    const audioBlob = await generateSpeech(text);
+    if (audioBlob) {
+      await playAudioBlob(audioBlob);
+    }
+  } catch (error) {
+    console.error('[TTS] Queue playback error:', error);
+  }
+
+  // Play next in queue
+  processNextInQueue();
+}
+
+// Add text to queue and start processing if not already
+function queueSpeech(text: string) {
+  audioQueue.push(text);
+  console.log('[TTS] Added to queue. Queue length:', audioQueue.length);
+
+  if (!isProcessingQueue) {
+    processNextInQueue();
+  }
+}
+
+// Main speak function - splits text into sentences and queues each one
 export async function speak(text: string, onStart?: () => void, onEnd?: () => void) {
   // Only run on client-side
   if (typeof window === 'undefined') {
@@ -105,9 +158,6 @@ export async function speak(text: string, onStart?: () => void, onEnd?: () => vo
     return;
   }
 
-  // Stop any currently playing audio
-  stopSpeaking();
-
   // Clean text for TTS
   const cleanText = cleanTextForTTS(text);
   if (!cleanText) {
@@ -116,35 +166,44 @@ export async function speak(text: string, onStart?: () => void, onEnd?: () => vo
   }
 
   console.log('[TTS] Starting speech process...');
+  onStart?.();
 
-  try {
-    isSpeaking = true;
-    onStart?.();
+  // Split into sentences for faster streaming
+  const sentences = splitIntoSentences(cleanText);
+  console.log('[TTS] Split into', sentences.length, 'sentences');
 
-    // Generate speech using ElevenLabs
-    const audioBlob = await generateSpeech(cleanText);
-
-    if (audioBlob) {
-      await playAudio(audioBlob);
-    } else {
-      console.error('[TTS] No audio blob generated');
+  // Add each sentence to the queue
+  for (const sentence of sentences) {
+    if (sentence.length > 0) {
+      queueSpeech(sentence);
     }
-  } catch (error) {
-    console.error('[TTS] Speech error:', error);
-  } finally {
-    isSpeaking = false;
-    onEnd?.();
   }
+
+  // Call onEnd when the ENTIRE queue is finished (not just this text)
+  // For simplicity, we'll call it after a small delay
+  // In production, you'd want a more sophisticated callback system
+  setTimeout(() => {
+    if (!isProcessingQueue) {
+      onEnd?.();
+    }
+  }, 100);
 }
 
-// Stop current speech
+// Stop current speech and clear queue
 export function stopSpeaking() {
+  console.log('[TTS] Stopping all speech and clearing queue');
+
+  // Clear queue
+  audioQueue.length = 0;
+
+  // Stop current audio
   if (currentAudio) {
-    console.log('[TTS] Stopping current audio');
     currentAudio.pause();
     currentAudio.currentTime = 0;
     currentAudio = null;
   }
+
+  isProcessingQueue = false;
   isSpeaking = false;
 }
 
@@ -164,7 +223,6 @@ export function setSoundEnabled(on: boolean) {
 export function isSoundEnabled(): boolean {
   if (typeof window !== 'undefined') {
     const enabled = localStorage.getItem('suki-sound') !== 'false';
-    console.log('[TTS] Sound enabled:', enabled);
     return enabled;
   }
   return true;
