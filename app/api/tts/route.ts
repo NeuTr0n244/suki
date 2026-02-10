@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
-const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // Bella - young female voice (free tier)
+const VOICE_ID = 'ocZQ262SsZb9RIxcQBOj'; // SUKI voice
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,10 +29,8 @@ export async function POST(req: NextRequest) {
           text: text,
           model_id: 'eleven_multilingual_v2',
           voice_settings: {
-            stability: 0.3,        // Lower for more animated/expressive voice
-            similarity_boost: 0.9, // Higher for more character consistency
-            style: 0.8,            // Add style for more personality
-            use_speaker_boost: true // Boost for clearer anime voice
+            stability: 0.5,
+            similarity_boost: 0.75,
           },
         }),
       }
