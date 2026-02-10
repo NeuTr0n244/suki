@@ -274,11 +274,6 @@ export default function Home() {
           {activeTab === 'faq' && <FaqPage key="faq" />}
         </AnimatePresence>
       </main>
-
-      {/* Minimal Footer */}
-      <footer className="relative z-10 text-center py-4 text-xs text-slate-600 font-mono border-t border-purple-500/10">
-        © 2026 SUKI · Not financial advice · DYOR
-      </footer>
     </div>
   );
 }
