@@ -53,7 +53,7 @@ export default function SukiCharacter() {
     <Canvas
       camera={{ position: [0, 0, 4], fov: 40 }}
       gl={{ alpha: true, antialias: true }}
-      style={{ background: 'transparent' }}
+      style={{ width: '100%', height: '100%', background: 'transparent' }}
     >
       {/* Lighting optimized for anime model */}
       <ambientLight intensity={0.8} />

@@ -223,12 +223,45 @@ export default function Home() {
       <main className="pt-16 min-h-screen">
         <AnimatePresence mode="wait">
           {activeTab === 'chat' && (
-            <div key="chat" className="h-[calc(100vh-64px)] flex items-start justify-center pt-4">
-              <Chat onSend={handleSend} disabled={isAnalyzing}>
-                {messages.map((msg) => (
-                  <ChatMessage key={msg.id} message={msg} />
-                ))}
-              </Chat>
+            <div key="chat" className="h-[calc(100vh-64px)] flex items-stretch pt-4 px-4 gap-4">
+              {/* CHAT AREA - LEFT SIDE (60%) */}
+              <div style={{ flex: '0 0 60%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+                <Chat onSend={handleSend} disabled={isAnalyzing}>
+                  {messages.map((msg) => (
+                    <ChatMessage key={msg.id} message={msg} />
+                  ))}
+                </Chat>
+              </div>
+
+              {/* SUKI CHARACTER - RIGHT SIDE (40%) */}
+              <div
+                style={{
+                  flex: '0 0 40%',
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  justifyContent: 'center',
+                  height: '100%',
+                  pointerEvents: 'none',
+                }}
+              >
+                <div
+                  style={{
+                    height: '85vh',
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {use3D ? (
+                    <ErrorBoundary fallback={<SukiFallback emotion={emotion} isSpeaking={isSpeaking} />}>
+                      <SukiCharacter3D />
+                    </ErrorBoundary>
+                  ) : (
+                    <SukiFallback emotion={emotion} isSpeaking={isSpeaking} />
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -239,31 +272,6 @@ export default function Home() {
           {activeTab === 'faq' && <FaqPage key="faq" />}
         </AnimatePresence>
       </main>
-
-      {/* SUKI Character - floating freely, no box, visible on all tabs */}
-      <div
-        className="hidden md:block"
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          right: '-5%',
-          height: '60vh',
-          width: 'auto',
-          zIndex: 1,
-          pointerEvents: 'none',
-          background: 'transparent',
-          border: 'none',
-          boxShadow: 'none',
-        }}
-      >
-        {use3D ? (
-          <ErrorBoundary fallback={<SukiFallback emotion={emotion} isSpeaking={isSpeaking} />}>
-            <SukiCharacter3D />
-          </ErrorBoundary>
-        ) : (
-          <SukiFallback emotion={emotion} isSpeaking={isSpeaking} />
-        )}
-      </div>
 
       {/* Minimal Footer */}
       <footer className="relative z-10 text-center py-4 text-xs text-slate-600 font-mono border-t border-purple-500/10">
