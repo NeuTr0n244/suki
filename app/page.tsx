@@ -17,7 +17,7 @@ import AboutPage from '@/components/AboutPage';
 import FaqPage from '@/components/FaqPage';
 import SukiFallback from '@/components/SukiFallback';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { speak } from '@/lib/tts';
+import { speak, isSoundEnabled, setSoundEnabled } from '@/lib/tts';
 import { truncateWallet } from '@/lib/format';
 
 // Dynamically import 3D character (client-side only)
@@ -41,6 +41,12 @@ export default function Home() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'how-it-works' | 'about' | 'faq'>('chat');
   const [use3D, setUse3D] = useState(true);
+  const [soundEnabled, setSoundEnabledState] = useState(true);
+
+  // Initialize sound state from localStorage
+  useEffect(() => {
+    setSoundEnabledState(isSoundEnabled());
+  }, []);
 
   // Check if .glb exists and is valid
   useEffect(() => {
@@ -58,11 +64,11 @@ export default function Home() {
       });
   }, []);
 
-  // Initial greeting
+  // Initial greeting (no TTS for welcome message)
   useEffect(() => {
     const greeting = "Hey~ I'm SUKI, your degen analyst. Paste your Solana wallet and I'll tell you exactly how rekt you are... or maybe you'll surprise me.";
     addMessage('suki', greeting);
-    speak(greeting, () => setIsSpeaking(true), () => setIsSpeaking(false));
+    // No TTS for initial greeting
   }, []);
 
   const addMessage = (role: 'user' | 'suki', content: string | React.ReactNode) => {
@@ -215,11 +221,17 @@ export default function Home() {
     }
   };
 
+  const handleToggleSound = () => {
+    const newState = !soundEnabled;
+    setSoundEnabledState(newState);
+    setSoundEnabled(newState);
+  };
+
   return (
     <div className="min-h-screen relative">
       {/* <CyberpunkBackground /> */}
       <SparkleDecoration />
-      <Header activeTab={activeTab} onTabChange={handleTabChange} />
+      <Header activeTab={activeTab} onTabChange={handleTabChange} soundEnabled={soundEnabled} onToggleSound={handleToggleSound} />
 
       {/* Main content area - changes based on active tab */}
       <main className="pt-16 min-h-screen">
