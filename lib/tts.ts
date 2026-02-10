@@ -1,3 +1,5 @@
+import { setGlobalSpeaking } from './speaking-context';
+
 let isSpeaking = false;
 let currentAudio: HTMLAudioElement | null = null;
 let audioUnlocked = false;
@@ -79,6 +81,12 @@ async function playAudioBlob(audioBlob: Blob): Promise<void> {
       console.log('[TTS] Audio playback ended');
       URL.revokeObjectURL(url);
       currentAudio = null;
+
+      // Only stop animation if queue is empty
+      if (audioQueue.length === 0) {
+        setGlobalSpeaking(false);
+      }
+
       resolve();
     };
 
@@ -92,10 +100,19 @@ async function playAudioBlob(audioBlob: Blob): Promise<void> {
     currentAudio.play().then(() => {
       console.log('[TTS] Audio playing successfully');
       audioUnlocked = true;
+
+      // Start animation when audio actually starts playing
+      setGlobalSpeaking(true);
     }).catch((error) => {
       console.error('[TTS] Audio play error:', error.message);
       URL.revokeObjectURL(url);
       currentAudio = null;
+
+      // Stop animation on error
+      if (audioQueue.length === 0) {
+        setGlobalSpeaking(false);
+      }
+
       reject(error);
     });
   });
@@ -106,6 +123,7 @@ async function processNextInQueue() {
   if (audioQueue.length === 0) {
     isProcessingQueue = false;
     isSpeaking = false;
+    setGlobalSpeaking(false); // Stop animation when queue finishes
     console.log('[TTS] Queue finished');
     return;
   }
@@ -205,6 +223,9 @@ export function stopSpeaking() {
 
   isProcessingQueue = false;
   isSpeaking = false;
+
+  // Stop animation
+  setGlobalSpeaking(false);
 }
 
 // Get speaking status

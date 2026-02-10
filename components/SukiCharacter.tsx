@@ -4,9 +4,11 @@ import { Suspense, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
+import { useSpeaking } from '@/lib/speaking-context';
 
 function Model() {
   const group = useRef<THREE.Group>(null);
+  const { isSpeaking } = useSpeaking();
 
   // Load the new model - suki-model.glb
   const { scene, animations } = useGLTF('/suki-model.glb');
@@ -18,9 +20,21 @@ function Model() {
       const firstAction = Object.values(actions)[0];
       if (firstAction) {
         firstAction.reset().fadeIn(0.5).play();
+        // Start paused
+        firstAction.paused = true;
       }
     }
   }, [actions]);
+
+  // Control animation based on speaking state
+  useEffect(() => {
+    if (actions) {
+      const firstAction = Object.values(actions)[0];
+      if (firstAction) {
+        firstAction.paused = !isSpeaking;
+      }
+    }
+  }, [isSpeaking, actions]);
 
   // Slow idle rotation
   useFrame((state) => {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Orbitron, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { SpeakingProvider } from "@/lib/speaking-context";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -68,7 +69,9 @@ export default function RootLayout({
         >
           <source src="/bg-video.mp4" type="video/mp4" />
         </video>
-        {children}
+        <SpeakingProvider>
+          {children}
+        </SpeakingProvider>
       </body>
     </html>
   );
