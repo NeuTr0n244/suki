@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
-const VOICE_ID = 'ocZQ262SsZb9RIxcQBOj'; // SUKI voice
+const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // Bella - young female voice (FREE tier)
 
 export async function POST(req: NextRequest) {
   try {
