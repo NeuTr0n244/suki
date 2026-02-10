@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getWalletPnL, transformToOurFormat } from '@/lib/solana-tracker';
-import { getWalletSwaps } from '@/lib/helius';
-import { getTokensData, getSolPrice } from '@/lib/dexscreener';
-import { calculateMetrics } from '@/lib/metrics';
+import { analyzeWallet, transformToAppFormat, getSolPriceUSD } from '@/lib/wallet-analysis';
 import { calculateDegenScore, getDegenTitle } from '@/lib/score';
 
 export async function GET(req: NextRequest) {
@@ -10,49 +7,24 @@ export async function GET(req: NextRequest) {
   if (!wallet) return NextResponse.json({ error: 'wallet required' }, { status: 400 });
 
   try {
-    // Get SOL price first
-    const solPrice = await getSolPrice();
+    console.log(`[Analyze] Starting analysis for ${wallet.slice(0, 4)}...${wallet.slice(-4)}`);
 
-    // Try Solana Tracker API first (recommended - returns PnL already calculated)
-    const pnlData = await getWalletPnL(wallet);
+    // Use new precise wallet analysis
+    const analysis = await analyzeWallet(wallet);
 
-    if (pnlData && Object.keys(pnlData.tokens).length > 0) {
-      // Solana Tracker worked! Use its data
-      console.log('[Analyze] Using Solana Tracker data');
-      const metrics = transformToOurFormat(pnlData, solPrice);
-      const score = calculateDegenScore(metrics);
-      const { title, emoji, desc } = getDegenTitle(score);
-
-      return NextResponse.json({
-        wallet,
-        score,
-        title,
-        emoji,
-        desc,
-        ...metrics,
-      });
+    if (!analysis || analysis.totalTokens === 0) {
+      return NextResponse.json({ error: 'No trades found for this wallet' }, { status: 404 });
     }
 
-    // Fallback to Helius if Solana Tracker fails
-    console.log('[Analyze] Solana Tracker unavailable, falling back to Helius');
-    const swapData = await getWalletSwaps(wallet);
+    // Get SOL price for USD conversions
+    const solPrice = await getSolPriceUSD();
 
-    if (!swapData.swaps.length) {
-      return NextResponse.json({ error: 'No trades found' }, { status: 404 });
-    }
-
-    const tokenAddresses = [
-      ...new Set(
-        swapData.swaps
-          .flatMap((s: any) => (s.tokenTransfers || []).map((t: any) => t.mint))
-          .filter((m: string) => m && m !== 'So11111111111111111111111111111111111111112')
-      ),
-    ];
-
-    const tokenData = await getTokensData(tokenAddresses as string[]);
-    const metrics = calculateMetrics(swapData.swaps, tokenData, solPrice, wallet, swapData.tokenMeta);
+    // Transform to app format
+    const metrics = transformToAppFormat(analysis, solPrice);
     const score = calculateDegenScore(metrics);
     const { title, emoji, desc } = getDegenTitle(score);
+
+    console.log(`[Analyze] Analysis complete - PnL: $${metrics.totalPnlUsd.toFixed(2)}`);
 
     return NextResponse.json({
       wallet,
@@ -64,6 +36,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (e: any) {
     console.error('[Analyze] Error:', e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: e.message || 'Analysis failed' }, { status: 500 });
   }
 }
