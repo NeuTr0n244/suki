@@ -30,7 +30,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           setIsTyping(false);
           clearInterval(timer);
         }
-      }, 20);
+      }, 12); // Faster typing speed for better sync with audio
       return () => clearInterval(timer);
     } else if (typeof message.content === 'string') {
       setDisplayedText(message.content);

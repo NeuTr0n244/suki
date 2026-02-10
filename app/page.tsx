@@ -93,8 +93,8 @@ export default function Home() {
 
     // Thinking message
     const thinkingMsg = "Hmm, let me look into this wallet...";
-    addMessage('suki', thinkingMsg);
     speak(thinkingMsg, () => setIsSpeaking(true), () => setIsSpeaking(false));
+    addMessage('suki', thinkingMsg);
 
     try {
       // Simulate progress messages
@@ -158,15 +158,16 @@ export default function Home() {
           }),
         });
         const chatData = await chatRes.json();
-        addMessage('suki', chatData.response);
+        // Start audio IMMEDIATELY before adding message for better sync
         speak(chatData.response, () => setIsSpeaking(true), () => setIsSpeaking(false));
+        addMessage('suki', chatData.response);
       }, 4500);
 
       // Final message
       setTimeout(() => {
         const finalMsg = "Got questions? Ask me anything about your wallet — best trade, worst trade, what to fix, whatever~";
-        addMessage('suki', finalMsg);
         speak(finalMsg, () => setIsSpeaking(true), () => setIsSpeaking(false));
+        addMessage('suki', finalMsg);
       }, 6000);
 
     } catch (error) {
@@ -204,12 +205,12 @@ export default function Home() {
           }),
         });
         const data = await res.json();
-        addMessage('suki', data.response);
         speak(data.response, () => setIsSpeaking(true), () => setIsSpeaking(false));
+        addMessage('suki', data.response);
       } catch {
         const errorMsg = "Hmm, my circuits glitched~ Try again.";
-        addMessage('suki', errorMsg);
         speak(errorMsg, () => setIsSpeaking(true), () => setIsSpeaking(false));
+        addMessage('suki', errorMsg);
       }
     }
   };
