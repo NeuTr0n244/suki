@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
-const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // Bella - young female voice (FREE tier)
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,9 +14,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'ElevenLabs API key not configured' }, { status: 500 });
     }
 
-    // Call ElevenLabs API with streaming for faster response
+    // Call ElevenLabs API with Lulu Lolipop voice (HARDCODED)
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream`,
+      'https://api.elevenlabs.io/v1/text-to-speech/ocZQ262SsZb9RIxcQBOj/stream',
       {
         method: 'POST',
         headers: {
