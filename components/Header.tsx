@@ -31,9 +31,9 @@ export default function Header({ activeTab, onTabChange, soundEnabled, onToggleS
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-6">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-xl font-bold logo-suki gradient-text">SUKI</h1>
-            <p className="text-[10px] text-slate-400 font-rajdhani hidden sm:block">
+          <div className="flex flex-col">
+            <h1 className="logo-suki leading-none">SUKI</h1>
+            <p className="logo-subtitle font-rajdhani mt-1 hidden sm:block">
               Anime Degen Analyst
             </p>
           </div>
