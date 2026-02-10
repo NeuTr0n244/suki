@@ -48,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${outfit.variable} ${orbitron.variable} ${jetbrainsMono.variable}`}>
       <body className="anime-bg noise antialiased">
-        {/* VIDEO BACKGROUND - ESCURECIDO */}
+        {/* VIDEO BACKGROUND - FORÇADO */}
         <video
           autoPlay
           loop
@@ -61,26 +61,13 @@ export default function RootLayout({
             width: '100vw',
             height: '100vh',
             objectFit: 'cover',
-            zIndex: -2,
-            opacity: 0.3,
+            zIndex: -1,
+            opacity: 0.5,
             pointerEvents: 'none',
           }}
         >
           <source src="/bg-video.mp4" type="video/mp4" />
         </video>
-        {/* OVERLAY ESCURO */}
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: -1,
-            background: 'linear-gradient(to bottom, rgba(10,6,18,0.8), rgba(26,10,46,0.85))',
-            pointerEvents: 'none',
-          }}
-        />
         {children}
       </body>
     </html>
