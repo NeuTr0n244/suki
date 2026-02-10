@@ -11,6 +11,7 @@ interface HeaderProps {
 
 export default function Header({ activeTab, onTabChange, soundEnabled, onToggleSound }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const tabs = [
     { id: 'chat', label: 'Chat' },
@@ -18,6 +19,12 @@ export default function Header({ activeTab, onTabChange, soundEnabled, onToggleS
     { id: 'about', label: 'About' },
     { id: 'faq', label: 'FAQ' },
   ] as const;
+
+  const handleCopyCA = () => {
+    navigator.clipboard.writeText('CA SOON');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 h-16 glass border-b border-purple-500/20">
@@ -56,6 +63,20 @@ export default function Header({ activeTab, onTabChange, soundEnabled, onToggleS
               </button>
             ))}
           </nav>
+
+          {/* CA SOON Badge */}
+          <button
+            onClick={handleCopyCA}
+            className="px-4 py-2 rounded-lg text-xs font-bold font-rajdhani
+                     bg-gradient-to-r from-purple-600/20 to-pink-600/20
+                     border-2 border-purple-500/50 hover:border-pink-500/70
+                     text-purple-300 hover:text-pink-300
+                     transition-all duration-300 hover:scale-105
+                     shadow-lg hover:shadow-purple-500/30"
+            title="Click to copy"
+          >
+            {copied ? 'Copied!' : 'CA SOON'}
+          </button>
 
           {/* Sound Toggle Button */}
           <button
@@ -150,6 +171,18 @@ export default function Header({ activeTab, onTabChange, soundEnabled, onToggleS
               {tab.label}
             </button>
           ))}
+
+          {/* CA SOON Badge in Mobile Menu */}
+          <button
+            onClick={handleCopyCA}
+            className="w-full text-center px-4 py-3 rounded-lg mb-2 font-rajdhani font-bold text-xs
+                     bg-gradient-to-r from-purple-600/20 to-pink-600/20
+                     border-2 border-purple-500/50 hover:border-pink-500/70
+                     text-purple-300 hover:text-pink-300
+                     transition-all duration-300"
+          >
+            {copied ? 'Copied!' : 'CA SOON'}
+          </button>
 
           {/* Sound Toggle in Mobile Menu */}
           <button

@@ -1,177 +1,63 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 
 export default function AboutPage() {
-  const [counts, setCounts] = useState({
-    wallets: 0,
-    tokens: 0,
-    scores: 0,
-  });
-
-  // Animate counters
-  useEffect(() => {
-    const duration = 2000;
-    const steps = 60;
-    const interval = duration / steps;
-
-    const targets = {
-      wallets: 10000,
-      tokens: 50000,
-      scores: 8500,
-    };
-
-    let step = 0;
-    const timer = setInterval(() => {
-      step++;
-      const progress = step / steps;
-
-      setCounts({
-        wallets: Math.floor(targets.wallets * progress),
-        tokens: Math.floor(targets.tokens * progress),
-        scores: Math.floor(targets.scores * progress),
-      });
-
-      if (step >= steps) {
-        clearInterval(timer);
-        setCounts(targets);
-      }
-    }, interval);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const features = [
-    {
-      title: 'Wallet Analysis',
-      description: 'Deep dive into your trading history with AI-powered insights',
-    },
-    {
-      title: 'Degen Score',
-      description: 'Get rated from 0 to 100 based on your trading patterns',
-    },
-    {
-      title: 'AI Chat',
-      description: 'Ask anything about your portfolio and get instant answers',
-    },
-  ];
-
-  const techStack = [
-    { name: 'Solana', logo: '◎' },
-    { name: 'Helius', logo: 'H' },
-    { name: 'Claude AI', logo: 'C' },
-    { name: 'Next.js', logo: '▲' },
-  ];
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen pt-24 pb-16 px-6 font-quicksand"
+      className="min-h-screen flex items-center justify-center px-6 py-24"
     >
-      <div className="max-w-6xl mx-auto space-y-20">
-        {/* Hero Section */}
-        <section className="text-center space-y-6 animate-slide-up">
-          <h1 className="text-5xl md:text-6xl font-bold gradient-text font-orbitron">
-            Meet SUKI
+      <div className="max-w-3xl w-full">
+        {/* Main Card */}
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="glass rounded-2xl p-12 space-y-8 backdrop-blur-xl bg-slate-900/60 border border-purple-500/30 shadow-2xl"
+        >
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl font-bold text-center gradient-text font-orbitron">
+            About SUKI
           </h1>
-          <p className="text-2xl text-purple-300 font-rajdhani font-semibold">
-            Your AI-Powered Anime Degen Analyst
+
+          {/* Description */}
+          <p className="text-lg md:text-xl text-slate-200 leading-relaxed text-center">
+            SUKI is your anime-powered degen analyst. She dives deep into your Solana wallet, roasts your trades,
+            calculates your PnL, and gives you a Degen Score from 0 to 100. Built with AI and Web3 technology,
+            SUKI combines on-chain analysis with anime personality to make crypto trading insights fun and savage.
+            Paste your wallet and find out if you're ngmi or actually based.
           </p>
-          <p className="text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            SUKI analyzes your Solana wallet, scores your degen level, and roasts your trading decisions — all with anime personality.
-          </p>
-        </section>
 
-        {/* Stats Section */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="glass hover-scale rounded-xl p-6 text-center animate-pulse-glow">
-            <div className="text-4xl md:text-5xl font-bold font-orbitron gradient-text mb-2">
-              {counts.wallets.toLocaleString()}+
-            </div>
-            <div className="text-sm text-slate-400 font-rajdhani font-semibold">
-              Wallets Analyzed
-            </div>
-          </div>
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <a
+              href="#"
+              className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600
+                       hover:from-purple-500 hover:to-pink-500 transition-all duration-300
+                       text-white font-bold text-lg text-center hover:scale-105
+                       shadow-lg hover:shadow-purple-500/50"
+            >
+              <span className="relative z-10">Follow on X</span>
+              <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity
+                            bg-gradient-to-r from-purple-400 to-pink-400 blur-xl -z-10"></div>
+            </a>
 
-          <div className="glass hover-scale rounded-xl p-6 text-center animate-pulse-glow" style={{ animationDelay: '0.2s' }}>
-            <div className="text-4xl md:text-5xl font-bold font-orbitron gradient-text mb-2">
-              {counts.tokens.toLocaleString()}+
-            </div>
-            <div className="text-sm text-slate-400 font-rajdhani font-semibold">
-              Tokens Tracked
-            </div>
+            <a
+              href="#"
+              className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600
+                       hover:from-pink-500 hover:to-purple-500 transition-all duration-300
+                       text-white font-bold text-lg text-center hover:scale-105
+                       shadow-lg hover:shadow-pink-500/50"
+            >
+              <span className="relative z-10">Community</span>
+              <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity
+                            bg-gradient-to-r from-pink-400 to-purple-400 blur-xl -z-10"></div>
+            </a>
           </div>
-
-          <div className="glass hover-scale rounded-xl p-6 text-center animate-pulse-glow" style={{ animationDelay: '0.4s' }}>
-            <div className="text-4xl md:text-5xl font-bold font-orbitron gradient-text mb-2">
-              {counts.scores.toLocaleString()}+
-            </div>
-            <div className="text-sm text-slate-400 font-rajdhani font-semibold">
-              Degen Scores Given
-            </div>
-          </div>
-
-          <div className="glass hover-scale rounded-xl p-6 text-center animate-pulse-glow" style={{ animationDelay: '0.6s' }}>
-            <div className="text-4xl md:text-5xl font-bold font-orbitron gradient-text mb-2">
-              &lt;2s
-            </div>
-            <div className="text-sm text-slate-400 font-rajdhani font-semibold">
-              Avg Response Time
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="space-y-8">
-          <h2 className="text-3xl font-bold text-center gradient-text font-orbitron">
-            Features
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="glass hover-scale rounded-xl p-8 text-center space-y-4"
-                style={{ animationDelay: `${index * 0.2}s` }}
-              >
-                <h3 className="text-xl font-bold text-purple-300 font-rajdhani">
-                  {feature.title}
-                </h3>
-                <p className="text-slate-400 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Tech Stack Section */}
-        <section className="space-y-8">
-          <h2 className="text-3xl font-bold text-center gradient-text font-orbitron">
-            Powered By
-          </h2>
-          <p className="text-center text-slate-400 font-rajdhani font-semibold">
-            Built with the best tools in Web3 and AI
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {techStack.map((tech, index) => (
-              <div
-                key={index}
-                className="glass rounded-xl p-6 text-center space-y-3 hover-scale cursor-pointer"
-                style={{ opacity: 0.8 }}
-              >
-                <div className="text-4xl font-bold text-purple-400 font-orbitron">
-                  {tech.logo}
-                </div>
-                <div className="text-sm font-rajdhani font-semibold text-slate-300">
-                  {tech.name}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        </motion.div>
       </div>
     </motion.div>
   );

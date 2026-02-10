@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getWalletPnL, transformToOurFormat } from '@/lib/solana-tracker';
-import { getSolPrice } from '@/lib/dexscreener';
+import { getWalletSwaps } from '@/lib/helius';
+import { getTokensData, getSolPrice } from '@/lib/dexscreener';
+import { calculateMetrics } from '@/lib/metrics';
 import { calculateDegenScore, getDegenTitle } from '@/lib/score';
 
 export async function GET(req: NextRequest) {
@@ -11,26 +13,44 @@ export async function GET(req: NextRequest) {
     // Get SOL price first
     const solPrice = await getSolPrice();
 
-    // Try Solana Tracker API (recommended - returns PnL already calculated)
+    // Try Solana Tracker API first (recommended - returns PnL already calculated)
     const pnlData = await getWalletPnL(wallet);
 
-    if (!pnlData) {
-      return NextResponse.json(
-        { error: 'Could not fetch wallet data. Please check the wallet address and try again.' },
-        { status: 404 }
-      );
+    if (pnlData && Object.keys(pnlData.tokens).length > 0) {
+      // Solana Tracker worked! Use its data
+      console.log('[Analyze] Using Solana Tracker data');
+      const metrics = transformToOurFormat(pnlData, solPrice);
+      const score = calculateDegenScore(metrics);
+      const { title, emoji, desc } = getDegenTitle(score);
+
+      return NextResponse.json({
+        wallet,
+        score,
+        title,
+        emoji,
+        desc,
+        ...metrics,
+      });
     }
 
-    // Check if wallet has any trading activity
-    if (Object.keys(pnlData.tokens).length === 0) {
-      return NextResponse.json(
-        { error: 'No trades found for this wallet' },
-        { status: 404 }
-      );
+    // Fallback to Helius if Solana Tracker fails
+    console.log('[Analyze] Solana Tracker unavailable, falling back to Helius');
+    const swapData = await getWalletSwaps(wallet);
+
+    if (!swapData.swaps.length) {
+      return NextResponse.json({ error: 'No trades found' }, { status: 404 });
     }
 
-    // Transform to our format
-    const metrics = transformToOurFormat(pnlData, solPrice);
+    const tokenAddresses = [
+      ...new Set(
+        swapData.swaps
+          .flatMap((s: any) => (s.tokenTransfers || []).map((t: any) => t.mint))
+          .filter((m: string) => m && m !== 'So11111111111111111111111111111111111111112')
+      ),
+    ];
+
+    const tokenData = await getTokensData(tokenAddresses as string[]);
+    const metrics = calculateMetrics(swapData.swaps, tokenData, solPrice, wallet, swapData.tokenMeta);
     const score = calculateDegenScore(metrics);
     const { title, emoji, desc } = getDegenTitle(score);
 
