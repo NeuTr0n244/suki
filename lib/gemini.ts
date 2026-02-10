@@ -1,5 +1,5 @@
-const GEMINI_KEY = process.env.GEMINI_API_KEY;
-const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const URL = 'https://api.anthropic.com/v1/messages';
 
 export async function askSuki(userMessage: string, walletData: any | null): Promise<string> {
   const system = `You are SUKI, an anime-style AI crypto analyst girl. You speak English only. Your personality:
@@ -54,17 +54,43 @@ RULES:
 - If no wallet analyzed, tell them to paste one`;
 
   try {
+    console.log('[SUKI] Calling Anthropic API (Claude)...');
+    console.log('[SUKI] API Key exists:', !!ANTHROPIC_API_KEY);
+    console.log('[SUKI] API Key first 10 chars:', ANTHROPIC_API_KEY?.substring(0, 10));
+
     const res = await fetch(URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY!,
+        'anthropic-version': '2023-06-01',
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: `${system}\n\nUser: ${userMessage}` }] }],
-        generationConfig: { temperature: 0.85, maxOutputTokens: 500 },
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        system: system,
+        messages: [
+          {
+            role: 'user',
+            content: userMessage,
+          },
+        ],
+        temperature: 0.85,
       }),
     });
+
+    console.log('[SUKI] Response status:', res.status);
     const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Hmm, my circuits glitched~ Try again.";
-  } catch {
+    console.log('[SUKI] Response data:', JSON.stringify(data, null, 2));
+
+    if (data.error) {
+      console.error('[SUKI] Anthropic API Error:', data.error);
+      return `Error: ${data.error.message || 'Unknown error'}`;
+    }
+
+    return data.content?.[0]?.text || "Hmm, my circuits glitched~ Try again.";
+  } catch (error) {
+    console.error('[SUKI] Exception:', error);
     return "Something went wrong... give me a sec and try again~";
   }
 }
