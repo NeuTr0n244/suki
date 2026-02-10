@@ -34,8 +34,8 @@ function Model() {
       <primitive
         object={scene}
         scale={2}
-        position={[0, -2.5, 0]}
-        rotation={[0, 0.3, 0]}
+        position={[-1, -2.5, 0]}
+        rotation={[0, -0.2, 0]}
       />
     </group>
   );
