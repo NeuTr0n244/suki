@@ -18,31 +18,9 @@ function processSwap(swap: any, walletAddress: string): SwapResult[] {
   const results: SwapResult[] = [];
   const processedMints = new Set<string>();
 
-  // DEBUG: Log first swap structure
-  if (tokenTransfers.length > 0 && !processSwap['logged']) {
-    console.log('[Metrics] ===== FIRST TOKEN TRANSFER =====');
-    console.log('[Metrics] Available fields:', Object.keys(tokenTransfers[0]));
-    console.log('[Metrics] Full structure:', JSON.stringify(tokenTransfers[0], null, 2));
-    console.log('[Metrics] ===== FIRST NATIVE TRANSFER =====');
-    if (nativeTransfers.length > 0) {
-      console.log('[Metrics] Available fields:', Object.keys(nativeTransfers[0]));
-      console.log('[Metrics] Full structure:', JSON.stringify(nativeTransfers[0], null, 2));
-    }
-    console.log('[Metrics] Wallet address:', walletAddress);
-    console.log('[Metrics] ==============================');
-    processSwap['logged'] = true;
-  }
-
   for (const transfer of tokenTransfers) {
     const mint = transfer.mint;
-    if (!mint || STABLES.includes(mint) || processedMints.has(mint)) {
-      // Log why we're skipping
-      if (!processSwap['skipLogged']) {
-        console.log('[Metrics] Skipping transfer - mint:', mint, 'isStable:', STABLES.includes(mint));
-        processSwap['skipLogged'] = true;
-      }
-      continue;
-    }
+    if (!mint || STABLES.includes(mint) || processedMints.has(mint)) continue;
     processedMints.add(mint);
 
     const tokenAmount = Math.abs(transfer.tokenAmount || 0);
@@ -56,21 +34,13 @@ function processSwap(swap: any, walletAddress: string): SwapResult[] {
       }
     }
 
-    // Determine direction - make sure addresses match
-    const toUser = transfer.toUserAccount?.trim();
-    const fromUser = transfer.fromUserAccount?.trim();
-    const wallet = walletAddress.trim();
-
-    if (toUser === wallet) {
+    // Determine direction
+    if (transfer.toUserAccount === walletAddress) {
       // Token came TO user = BUY (user spent SOL to get token)
       results.push({ mint, action: 'buy', solAmount, tokenAmount });
-    } else if (fromUser === wallet) {
+    } else if (transfer.fromUserAccount === walletAddress) {
       // Token left user = SELL (user sold token for SOL)
       results.push({ mint, action: 'sell', solAmount, tokenAmount });
-    } else if (!processSwap['addressMismatchLogged']) {
-      // Log if we're not matching the wallet
-      console.log('[Metrics] Address mismatch - wallet:', wallet, 'to:', toUser, 'from:', fromUser);
-      processSwap['addressMismatchLogged'] = true;
     }
   }
 
@@ -135,8 +105,6 @@ export function calculateMetrics(
   walletAddress: string,
   tokenMeta: Map<string, { name: string; symbol: string }>
 ) {
-  console.log(`[Metrics] Processing ${swaps.length} swaps for wallet ${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`);
-
   const tokenMap = new Map<
     string,
     {
@@ -149,15 +117,8 @@ export function calculateMetrics(
   >();
 
   // Process each swap
-  let processedCount = 0;
   for (const swap of swaps) {
     const processed = processSwap(swap, walletAddress);
-    if (processed.length > 0) {
-      processedCount++;
-    }
-    if (processedCount === 1) {
-      console.log('[Metrics] First processed swap results:', JSON.stringify(processed, null, 2));
-    }
 
     for (const result of processed) {
       if (!tokenMap.has(result.mint)) {

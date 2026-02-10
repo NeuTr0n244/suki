@@ -24,9 +24,9 @@ A Next.js application that analyzes Solana wallet trading patterns with an anime
 - **Styling**: Tailwind CSS + Custom CSS
 - **3D Graphics**: Three.js, React Three Fiber
 - **Animations**: Framer Motion
-- **AI**: Gemini 2.0 Flash
-- **APIs**: Helius (Solana), DexScreener
-- **TTS**: Google Translate TTS
+- **AI**: Anthropic Claude (Sonnet 4.5)
+- **APIs**: Solana Tracker (wallet PnL), DexScreener (token prices)
+- **TTS**: ElevenLabs
 
 ## Setup
 
@@ -38,14 +38,16 @@ A Next.js application that analyzes Solana wallet trading patterns with an anime
 2. **Configure environment**:
    Create `.env.local`:
    ```env
-   HELIUS_API_KEY=your_helius_key
-   GEMINI_API_KEY=your_gemini_key
+   SOLANA_TRACKER_API_KEY=your_solana_tracker_key
+   ANTHROPIC_API_KEY=your_anthropic_key
+   ELEVENLABS_API_KEY=your_elevenlabs_key
    NEXT_PUBLIC_URL=http://localhost:3000
    ```
 
    Get API keys:
-   - Helius: https://www.helius.dev/
-   - Gemini: https://aistudio.google.com/apikey
+   - Solana Tracker: https://www.solanatracker.io/data-api (for wallet PnL analysis)
+   - Anthropic Claude: https://console.anthropic.com/ (for AI chat)
+   - ElevenLabs: https://elevenlabs.io/ (for text-to-speech)
 
 3. **Run development server**:
    ```bash
@@ -60,12 +62,12 @@ A Next.js application that analyzes Solana wallet trading patterns with an anime
 ## How It Works
 
 1. User pastes their Solana wallet address
-2. SUKI fetches all swap transactions via Helius API
-3. Token data is enriched with DexScreener API
-4. Metrics are calculated (PnL, win rate, hold times, etc.)
-5. Degen Score is computed based on 8 factors
-6. Gemini AI generates personalized roasts and advice
-7. User can chat with SUKI about their trading patterns
+2. SUKI fetches complete PnL data via Solana Tracker API (pre-calculated metrics)
+3. Token prices are enriched with DexScreener API
+4. Degen Score is computed based on trading performance
+5. Claude AI generates personalized roasts and advice
+6. User can chat with SUKI about their trading patterns
+7. Text-to-speech brings SUKI's personality to life
 
 ## Degen Score Factors
 

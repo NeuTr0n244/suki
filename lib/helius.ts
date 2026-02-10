@@ -86,15 +86,6 @@ export async function getWalletSwaps(wallet: string) {
         tx.nativeTransfers.length > 0
       );
 
-      // DEBUG: Log first transaction structure
-      if (all.length === 0 && swaps.length > 0) {
-        console.log('[Helius] ===== SAMPLE TRANSACTION =====');
-        console.log('[Helius] Signature:', swaps[0].signature);
-        console.log('[Helius] Token Transfers:', JSON.stringify(swaps[0].tokenTransfers?.slice(0, 2), null, 2));
-        console.log('[Helius] Native Transfers:', JSON.stringify(swaps[0].nativeTransfers?.slice(0, 2), null, 2));
-        console.log('[Helius] ==============================');
-      }
-
       all.push(...swaps);
       console.log(`[Helius] Batch ${i / 50 + 1}: ${swaps.length} swaps found`);
 

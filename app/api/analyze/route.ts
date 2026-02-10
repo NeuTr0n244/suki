@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getWalletSwaps } from '@/lib/helius';
-import { getTokensData, getSolPrice } from '@/lib/dexscreener';
-import { calculateMetrics } from '@/lib/metrics';
+import { getWalletPnL, transformToOurFormat } from '@/lib/solana-tracker';
+import { getSolPrice } from '@/lib/dexscreener';
 import { calculateDegenScore, getDegenTitle } from '@/lib/score';
 
 export async function GET(req: NextRequest) {
@@ -9,23 +8,29 @@ export async function GET(req: NextRequest) {
   if (!wallet) return NextResponse.json({ error: 'wallet required' }, { status: 400 });
 
   try {
-    const swapData = await getWalletSwaps(wallet);
-    if (!swapData.swaps.length) return NextResponse.json({ error: 'No trades found' }, { status: 404 });
+    // Get SOL price first
+    const solPrice = await getSolPrice();
 
-    const tokenAddresses = [
-      ...new Set(
-        swapData.swaps
-          .flatMap((s: any) => (s.tokenTransfers || []).map((t: any) => t.mint))
-          .filter((m: string) => m && m !== 'So11111111111111111111111111111111111111112')
-      ),
-    ];
+    // Try Solana Tracker API (recommended - returns PnL already calculated)
+    const pnlData = await getWalletPnL(wallet);
 
-    const [tokenData, solPrice] = await Promise.all([
-      getTokensData(tokenAddresses as string[]),
-      getSolPrice(),
-    ]);
+    if (!pnlData) {
+      return NextResponse.json(
+        { error: 'Could not fetch wallet data. Please check the wallet address and try again.' },
+        { status: 404 }
+      );
+    }
 
-    const metrics = calculateMetrics(swapData.swaps, tokenData, solPrice, wallet, swapData.tokenMeta);
+    // Check if wallet has any trading activity
+    if (Object.keys(pnlData.tokens).length === 0) {
+      return NextResponse.json(
+        { error: 'No trades found for this wallet' },
+        { status: 404 }
+      );
+    }
+
+    // Transform to our format
+    const metrics = transformToOurFormat(pnlData, solPrice);
     const score = calculateDegenScore(metrics);
     const { title, emoji, desc } = getDegenTitle(score);
 
@@ -38,6 +43,7 @@ export async function GET(req: NextRequest) {
       ...metrics,
     });
   } catch (e: any) {
+    console.error('[Analyze] Error:', e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
