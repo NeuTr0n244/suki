@@ -14,9 +14,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'ElevenLabs API key not configured' }, { status: 500 });
     }
 
-    // Call ElevenLabs API with Lulu Lolipop voice (HARDCODED)
+    // Call ElevenLabs API with Rachel voice (HARDCODED - available on this account)
     const response = await fetch(
-      'https://api.elevenlabs.io/v1/text-to-speech/ocZQ262SsZb9RIxcQBOj/stream',
+      'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream',
       {
         method: 'POST',
         headers: {
