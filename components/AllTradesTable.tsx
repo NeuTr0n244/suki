@@ -36,22 +36,22 @@ export default function AllTradesTable({ allTokens }: AllTradesTableProps) {
   const getStatusBadge = (status: string, isRug: boolean) => {
     if (isRug || status === 'rugged')
       return (
-        <span className="text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-400">☠️ RUG</span>
+        <span className="text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-rajdhani font-semibold">RUG</span>
       );
     if (status === 'dead')
       return (
-        <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">⚰️ DEAD</span>
+        <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-rajdhani font-semibold">DEAD</span>
       );
     if (status === 'active')
       return (
-        <span className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400">✅ ACTIVE</span>
+        <span className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400 font-rajdhani font-semibold">ACTIVE</span>
       );
     if (status === 'holding')
       return (
-        <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400">💎 HOLD</span>
+        <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 font-rajdhani font-semibold">HOLD</span>
       );
     return (
-      <span className="text-xs px-2 py-0.5 rounded bg-slate-500/20 text-slate-400">? UNK</span>
+      <span className="text-xs px-2 py-0.5 rounded bg-slate-500/20 text-slate-400 font-rajdhani font-semibold">UNK</span>
     );
   };
 
@@ -64,9 +64,8 @@ export default function AllTradesTable({ allTokens }: AllTradesTableProps) {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-purple-400">✦</span>
-          <h3 className="text-lg font-bold text-slate-200 font-outfit">ALL POSITIONS</h3>
-          <span className="text-xs text-slate-500 font-mono">({allTokens.length} tokens)</span>
+          <h3 className="text-lg font-bold text-purple-200 font-rajdhani uppercase tracking-wide">All Positions</h3>
+          <span className="text-xs text-slate-500 font-quicksand">({allTokens.length} tokens)</span>
         </div>
       </div>
       <div className="border-t border-purple-500/20 mb-4" />
@@ -132,7 +131,7 @@ export default function AllTradesTable({ allTokens }: AllTradesTableProps) {
       {allTokens.length > 10 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="mt-4 w-full py-2 px-4 rounded-lg bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 transition-all text-purple-400 font-outfit flex items-center justify-center gap-2"
+          className="mt-4 w-full py-2 px-4 rounded-lg bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 transition-all text-purple-400 font-rajdhani font-semibold flex items-center justify-center gap-2"
         >
           {expanded ? (
             <>

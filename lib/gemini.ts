@@ -40,10 +40,10 @@ TOP WINS (by SOL profit):
 ${(walletData.topWins || []).map((t: any) => `- ${t.symbol}: +${t.pnlSol?.toFixed(2)} SOL (~$${t.pnlUsd?.toFixed(2)}) (+${t.pnlPercent?.toFixed(1)}%) [${t.trades} trades]`).join('\n') || 'None'}
 
 TOP LOSSES (by SOL loss):
-${(walletData.topLosses || []).map((t: any) => `- ${t.symbol}: ${t.pnlSol?.toFixed(2)} SOL (~$${t.pnlUsd?.toFixed(2)}) (${t.pnlPercent?.toFixed(1)}%) [${t.trades} trades] ${t.status === 'rugged' ? '☠️RUG' : t.status === 'dead' ? '⚰️DEAD' : ''}`).join('\n') || 'None'}
+${(walletData.topLosses || []).map((t: any) => `- ${t.symbol}: ${t.pnlSol?.toFixed(2)} SOL (~$${t.pnlUsd?.toFixed(2)}) (${t.pnlPercent?.toFixed(1)}%) [${t.trades} trades] ${t.status === 'rugged' ? '[RUG]' : t.status === 'dead' ? '[DEAD]' : ''}`).join('\n') || 'None'}
 
 ALL TOKENS:
-${(walletData.allTokens || []).slice(0, 50).map((t: any) => `- ${t.symbol}: ${t.pnlSol?.toFixed(3)} SOL (${t.pnlPercent?.toFixed(1)}%) | ${t.trades} trades | ${t.status}${t.isRug ? ' ☠️' : ''}`).join('\n') || 'None'}
+${(walletData.allTokens || []).slice(0, 50).map((t: any) => `- ${t.symbol}: ${t.pnlSol?.toFixed(3)} SOL (${t.pnlPercent?.toFixed(1)}%) | ${t.trades} trades | ${t.status}${t.isRug ? ' [RUG]' : ''}`).join('\n') || 'None'}
 ` : 'No wallet analyzed yet. Ask the user to paste their Solana wallet address to get started.'}
 
 RULES:

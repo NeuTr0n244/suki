@@ -21,15 +21,16 @@ export default function SparkleDecoration() {
           style={{
             left: sparkle.left,
             top: sparkle.top,
-            fontSize: `${sparkle.size}px`,
-            color: sparkle.color,
+            width: `${sparkle.size}px`,
+            height: `${sparkle.size}px`,
+            backgroundColor: sparkle.color,
             opacity: sparkle.opacity,
             animationDelay: `${sparkle.delay}s`,
             animationDuration: `${sparkle.duration}s`,
+            borderRadius: '50%',
+            boxShadow: `0 0 ${sparkle.size * 2}px ${sparkle.color}`,
           }}
-        >
-          ✦
-        </div>
+        />
       ))}
     </div>
   );

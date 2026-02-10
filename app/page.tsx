@@ -60,7 +60,7 @@ export default function Home() {
 
   // Initial greeting
   useEffect(() => {
-    const greeting = "Hey~ I'm SUKI, your degen analyst ✦ Paste your Solana wallet and I'll tell you exactly how rekt you are... or maybe you'll surprise me.";
+    const greeting = "Hey~ I'm SUKI, your degen analyst. Paste your Solana wallet and I'll tell you exactly how rekt you are... or maybe you'll surprise me.";
     addMessage('suki', greeting);
     speak(greeting, () => setIsSpeaking(true), () => setIsSpeaking(false));
   }, []);
@@ -88,7 +88,7 @@ export default function Home() {
     setEmotion('thinking');
 
     // Thinking message
-    const thinkingMsg = "Hmm, let me look into this wallet... ✦";
+    const thinkingMsg = "Hmm, let me look into this wallet...";
     addMessage('suki', thinkingMsg);
     speak(thinkingMsg, () => setIsSpeaking(true), () => setIsSpeaking(false));
 
@@ -97,7 +97,7 @@ export default function Home() {
       const progressMessages = [
         'Scanning your trades...',
         'Checking tokens on DexScreener...',
-        'Crunching the numbers... almost done ✦',
+        'Crunching the numbers... almost done.',
       ];
 
       let index = 0;
@@ -160,7 +160,7 @@ export default function Home() {
 
       // Final message
       setTimeout(() => {
-        const finalMsg = "Got questions? Ask me anything about your wallet — best trade, worst trade, what to fix, whatever~ ✦";
+        const finalMsg = "Got questions? Ask me anything about your wallet — best trade, worst trade, what to fix, whatever~";
         addMessage('suki', finalMsg);
         speak(finalMsg, () => setIsSpeaking(true), () => setIsSpeaking(false));
       }, 6000);

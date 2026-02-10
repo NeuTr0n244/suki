@@ -2,84 +2,77 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
 
 export default function FaqPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
 
   const faqs = [
     {
+      q: 'What is SUKI?',
+      a: 'SUKI is an AI-powered anime degen analyst that analyzes your Solana wallet trading history, calculates your Degen Score (0-100), tracks your PnL, and roasts your trading decisions with personality.',
+    },
+    {
       q: 'Is SUKI free?',
-      a: 'Completely free. No wallet connection, no sign-up, no catch. Just paste your public address.',
+      a: 'Completely free. No wallet connection, no sign-up, no catch. Just paste your public Solana address and get instant insights.',
     },
     {
-      q: 'How is the Degen Score calculated?',
-      a: 'Based on 8 factors: trading frequency, token diversity, rug pull rate, paper/diamond hands ratio, FOMO buying patterns, night trading, average hold time, and consistency.',
+      q: 'Is my wallet safe?',
+      a: 'Absolutely. We only read public blockchain data using your wallet address. We never ask for private keys, seed phrases, or wallet signatures. Your funds are completely safe.',
     },
     {
-      q: 'Can SUKI access my funds?',
-      a: 'No. We only read public blockchain data. We never ask for private keys or wallet signatures.',
+      q: 'How does the Degen Score work?',
+      a: 'Your score is calculated based on 8 factors: trading frequency, token diversity, rug pull survival rate, paper/diamond hands ratio, FOMO buying patterns, night trading habits, average hold time, and consistency. Higher scores mean more degen behavior.',
     },
     {
-      q: 'Which blockchains?',
-      a: 'Solana only for now. More chains coming soon.',
+      q: 'What blockchain does SUKI support?',
+      a: 'Currently Solana only. We track all SPL token trades on the Solana blockchain. More chains coming soon.',
     },
     {
-      q: 'Why are some values approximate?',
-      a: 'We use current SOL price for historical conversions. Exact USD values at each trade timestamp would require premium APIs.',
-    },
-    {
-      q: 'Who made SUKI?',
-      a: 'A degen who got tired of not knowing their own stats.',
+      q: 'Who built SUKI?',
+      a: 'Built by a degen who got tired of not knowing their own trading stats. Powered by Helius API for blockchain data, Claude AI for personality, and Next.js for the frontend.',
     },
   ];
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-[calc(100vh-64px)] flex items-center justify-center p-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen pt-24 pb-16 px-6 font-quicksand"
     >
-      <div className="max-w-3xl w-full">
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent font-orbitron"
-        >
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Title */}
+        <h1 className="text-5xl md:text-6xl font-bold text-center gradient-text font-orbitron mb-12 animate-slide-up">
           FAQ
-        </motion.h1>
+        </h1>
+
+        {/* FAQ Accordion */}
         <div className="space-y-4">
           {faqs.map((faq, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 + 0.2 }}
-              className="glass-card overflow-hidden"
+              className="accordion-item"
+              style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <button
+              <div
                 onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                className="w-full px-8 py-5 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
+                className={`accordion-header ${expandedFaq === i ? 'active' : ''}`}
               >
-                <span className="font-bold text-lg text-slate-200 font-outfit">{faq.q}</span>
-                <ChevronDown
-                  className={`w-6 h-6 text-purple-400 transition-transform ${
-                    expandedFaq === i ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-              <motion.div
-                initial={false}
-                animate={{ height: expandedFaq === i ? 'auto' : 0 }}
-                className="overflow-hidden"
-              >
-                <div className="px-8 pb-5 text-slate-400 font-outfit leading-relaxed border-l-2 border-purple-500 ml-8">
+                <div className="flex items-center justify-between">
+                  <span className="font-rajdhani font-bold text-lg text-purple-200">
+                    {faq.q}
+                  </span>
+                  <span className="text-2xl text-purple-400 font-orbitron transition-transform duration-300" style={{ transform: expandedFaq === i ? 'rotate(45deg)' : 'rotate(0deg)' }}>
+                    +
+                  </span>
+                </div>
+              </div>
+              <div className={`accordion-content ${expandedFaq === i ? 'open' : ''}`}>
+                <div className="accordion-body">
                   {faq.a}
                 </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

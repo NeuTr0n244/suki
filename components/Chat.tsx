@@ -21,12 +21,11 @@ export default function Chat({ children, onSend, disabled }: ChatProps) {
       {/* Chat Header */}
       <div className="px-6 py-3 border-b border-purple-500/20 bg-black/30 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-purple-400 text-sm">✦</span>
-          <span className="text-slate-300 text-sm font-outfit">SUKI is online</span>
+          <span className="text-slate-300 text-sm font-rajdhani font-semibold">SUKI is online</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-          <span className="text-green-400 text-xs font-outfit">Live</span>
+          <span className="text-green-400 text-xs font-rajdhani font-semibold">Live</span>
         </div>
       </div>
 

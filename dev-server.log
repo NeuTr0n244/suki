@@ -1,0 +1,18 @@
+
+> suki-degen@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use by process 26232, using available port 3002 instead.
+   ▲ Next.js 15.5.12 (Turbopack)
+   - Local:        http://localhost:3002
+   - Network:      http://192.168.1.101:3002
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 830ms
+ ⚠ Webpack is configured while Turbopack is not, which may cause problems.
+ ⚠ See instructions if you need to configure Turbopack:
+  https://nextjs.org/docs/app/api-reference/next-config-js/turbopack
+
+   Reload env: .env.local
+   Reload env: .env.local

@@ -46,15 +46,17 @@ export default function ScoreCard({ score, title, emoji, desc }: ScoreCardProps)
         boxShadow: `0 0 40px ${getGlowColor(score)}`,
       }}
     >
-      <div className="text-6xl mb-2">{emoji}</div>
+      <div className="text-sm font-rajdhani font-bold text-purple-300 mb-2 uppercase tracking-wider">
+        Degen Score
+      </div>
       <div
-        className="text-7xl font-orbitron font-black mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+        className="text-7xl font-orbitron font-black mb-4 gradient-text"
         style={{ lineHeight: 1 }}
       >
         {animatedScore}
       </div>
-      <div className="text-2xl font-bold text-slate-200 mb-2 font-outfit">{title}</div>
-      <div className="text-sm text-slate-400 font-outfit">{desc}</div>
+      <div className="text-2xl font-bold text-purple-200 mb-2 font-rajdhani">{title}</div>
+      <div className="text-sm text-slate-400 font-quicksand leading-relaxed">{desc}</div>
       <div className="mt-6 w-full h-3 bg-slate-800 rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}

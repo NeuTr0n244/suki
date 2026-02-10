@@ -32,30 +32,29 @@ export default function FinancialCard({ data }: FinancialCardProps) {
       transition={{ duration: 0.4 }}
       className="glass-card p-6"
     >
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-purple-400">✦</span>
-        <h3 className="text-lg font-bold text-slate-200 font-outfit">FINANCIAL OVERVIEW</h3>
+      <div className="mb-4">
+        <h3 className="text-lg font-bold text-purple-200 font-rajdhani uppercase tracking-wide">Financial Overview</h3>
       </div>
       <div className="border-t border-purple-500/20 mb-4" />
-      <div className="space-y-3 font-mono text-sm">
+      <div className="space-y-3 font-quicksand text-sm">
         <div className="flex justify-between items-baseline">
-          <span className="text-slate-400">💰 Total Spent</span>
+          <span className="text-slate-400 font-rajdhani font-semibold">Total Spent</span>
           <div className="text-right">
-            <div className="text-slate-200">{formatSol(data.totalSolSpent)}</div>
+            <div className="text-slate-200 font-mono">{formatSol(data.totalSolSpent)}</div>
             <div className="text-slate-500 text-xs">(~${data.totalInvestedUsd.toFixed(2)})</div>
           </div>
         </div>
         <div className="flex justify-between items-baseline">
-          <span className="text-slate-400">📈 Total Received</span>
+          <span className="text-slate-400 font-rajdhani font-semibold">Total Received</span>
           <div className="text-right">
-            <div className="text-slate-200">{formatSol(data.totalSolReceived)}</div>
+            <div className="text-slate-200 font-mono">{formatSol(data.totalSolReceived)}</div>
             <div className="text-slate-500 text-xs">(~${data.totalReturnedUsd.toFixed(2)})</div>
           </div>
         </div>
         <div className="flex justify-between items-baseline">
-          <span className="text-slate-400">📊 Net PnL</span>
+          <span className="text-slate-400 font-rajdhani font-semibold">Net PnL</span>
           <div className="text-right">
-            <div className={data.totalPnlSol >= 0 ? 'text-green-400' : 'text-red-400'}>
+            <div className={`font-mono ${data.totalPnlSol >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {data.totalPnlSol >= 0 ? '+' : ''}
               {formatSol(data.totalPnlSol)}
             </div>
@@ -65,48 +64,48 @@ export default function FinancialCard({ data }: FinancialCardProps) {
           </div>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">🎯 Win Rate</span>
-          <span className="text-slate-200">
+          <span className="text-slate-400 font-rajdhani font-semibold">Win Rate</span>
+          <span className="text-slate-200 font-mono">
             {data.winRate.toFixed(1)}% ({data.profitableTokens} of {data.totalTokensTraded})
           </span>
         </div>
         <div className="border-t border-purple-500/10 my-2" />
         <div className="flex justify-between">
-          <span className="text-slate-400">📋 Tokens Traded</span>
-          <span className="text-slate-200">{formatNumber(data.totalTokensTraded)}</span>
+          <span className="text-slate-400 font-rajdhani font-semibold">Tokens Traded</span>
+          <span className="text-slate-200 font-mono">{formatNumber(data.totalTokensTraded)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">☠️ Confirmed Rugs</span>
-          <span className="text-red-400">
+          <span className="text-slate-400 font-rajdhani font-semibold">Confirmed Rugs</span>
+          <span className="text-red-400 font-mono">
             {formatNumber(data.ruggedTokens)} ({((data.ruggedTokens / data.totalTokensTraded) * 100).toFixed(1)}%)
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">⚰️ Dead Tokens</span>
-          <span className="text-amber-400">
+          <span className="text-slate-400 font-rajdhani font-semibold">Dead Tokens</span>
+          <span className="text-amber-400 font-mono">
             {formatNumber(data.deadTokens)} ({((data.deadTokens / data.totalTokensTraded) * 100).toFixed(1)}%)
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">❓ Unknown</span>
-          <span className="text-slate-500">
+          <span className="text-slate-400 font-rajdhani font-semibold">Unknown</span>
+          <span className="text-slate-500 font-mono">
             {formatNumber(data.unknownTokens)} ({((data.unknownTokens / data.totalTokensTraded) * 100).toFixed(1)}%)
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">✅ Active</span>
-          <span className="text-green-400">
+          <span className="text-slate-400 font-rajdhani font-semibold">Active</span>
+          <span className="text-green-400 font-mono">
             {formatNumber(data.activeTokens)} ({((data.activeTokens / data.totalTokensTraded) * 100).toFixed(1)}%)
           </span>
         </div>
         <div className="border-t border-purple-500/10 my-2" />
         <div className="flex justify-between">
-          <span className="text-slate-400">💎 Diamond Hands</span>
-          <span className="text-cyan-400">{formatNumber(data.diamondHandsCount)}</span>
+          <span className="text-slate-400 font-rajdhani font-semibold">Diamond Hands</span>
+          <span className="text-cyan-400 font-mono">{formatNumber(data.diamondHandsCount)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">🧻 Paper Hands</span>
-          <span className="text-amber-400">{formatNumber(data.paperHandsCount)}</span>
+          <span className="text-slate-400 font-rajdhani font-semibold">Paper Hands</span>
+          <span className="text-amber-400 font-mono">{formatNumber(data.paperHandsCount)}</span>
         </div>
       </div>
     </motion.div>

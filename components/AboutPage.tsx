@@ -1,95 +1,177 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 export default function AboutPage() {
+  const [counts, setCounts] = useState({
+    wallets: 0,
+    tokens: 0,
+    scores: 0,
+  });
+
+  // Animate counters
+  useEffect(() => {
+    const duration = 2000;
+    const steps = 60;
+    const interval = duration / steps;
+
+    const targets = {
+      wallets: 10000,
+      tokens: 50000,
+      scores: 8500,
+    };
+
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      const progress = step / steps;
+
+      setCounts({
+        wallets: Math.floor(targets.wallets * progress),
+        tokens: Math.floor(targets.tokens * progress),
+        scores: Math.floor(targets.scores * progress),
+      });
+
+      if (step >= steps) {
+        clearInterval(timer);
+        setCounts(targets);
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const features = [
     {
-      icon: '📈',
-      title: 'Profit & Loss',
-      desc: 'Real PnL for every token — what you made and lost',
+      title: 'Wallet Analysis',
+      description: 'Deep dive into your trading history with AI-powered insights',
     },
     {
-      icon: '☠️',
-      title: 'Rug Detection',
-      desc: 'Finds dead tokens, rug pulls, and honeypots',
-    },
-    {
-      icon: '⏱️',
-      title: 'Hold Patterns',
-      desc: 'How long you hold and your paper/diamond ratio',
-    },
-    {
-      icon: '🎯',
-      title: 'Win Rate',
-      desc: 'Your success rate across all trades',
-    },
-    {
-      icon: '🌙',
-      title: 'Night Trading',
-      desc: 'Detects late-night FOMO trading habits',
-    },
-    {
-      icon: '🔥',
       title: 'Degen Score',
-      desc: 'Combined score rating your overall degeneracy',
+      description: 'Get rated from 0 to 100 based on your trading patterns',
     },
+    {
+      title: 'AI Chat',
+      description: 'Ask anything about your portfolio and get instant answers',
+    },
+  ];
+
+  const techStack = [
+    { name: 'Solana', logo: '◎' },
+    { name: 'Helius', logo: 'H' },
+    { name: 'Claude AI', logo: 'C' },
+    { name: 'Next.js', logo: '▲' },
   ];
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-[calc(100vh-64px)] flex items-center justify-center p-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen pt-24 pb-16 px-6 font-quicksand"
     >
-      <div className="max-w-6xl w-full space-y-16">
-        {/* What SUKI Analyzes */}
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent font-orbitron"
-          >
-            What SUKI Analyzes ✦
-          </motion.h1>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 + 0.2 }}
-                className="glass-card p-6 hover:border-purple-500/30 transition-all"
+      <div className="max-w-6xl mx-auto space-y-20">
+        {/* Hero Section */}
+        <section className="text-center space-y-6 animate-slide-up">
+          <h1 className="text-5xl md:text-6xl font-bold gradient-text font-orbitron">
+            Meet SUKI
+          </h1>
+          <p className="text-2xl text-purple-300 font-rajdhani font-semibold">
+            Your AI-Powered Anime Degen Analyst
+          </p>
+          <p className="text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            SUKI analyzes your Solana wallet, scores your degen level, and roasts your trading decisions — all with anime personality.
+          </p>
+        </section>
+
+        {/* Stats Section */}
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="glass hover-scale rounded-xl p-6 text-center animate-pulse-glow">
+            <div className="text-4xl md:text-5xl font-bold font-orbitron gradient-text mb-2">
+              {counts.wallets.toLocaleString()}+
+            </div>
+            <div className="text-sm text-slate-400 font-rajdhani font-semibold">
+              Wallets Analyzed
+            </div>
+          </div>
+
+          <div className="glass hover-scale rounded-xl p-6 text-center animate-pulse-glow" style={{ animationDelay: '0.2s' }}>
+            <div className="text-4xl md:text-5xl font-bold font-orbitron gradient-text mb-2">
+              {counts.tokens.toLocaleString()}+
+            </div>
+            <div className="text-sm text-slate-400 font-rajdhani font-semibold">
+              Tokens Tracked
+            </div>
+          </div>
+
+          <div className="glass hover-scale rounded-xl p-6 text-center animate-pulse-glow" style={{ animationDelay: '0.4s' }}>
+            <div className="text-4xl md:text-5xl font-bold font-orbitron gradient-text mb-2">
+              {counts.scores.toLocaleString()}+
+            </div>
+            <div className="text-sm text-slate-400 font-rajdhani font-semibold">
+              Degen Scores Given
+            </div>
+          </div>
+
+          <div className="glass hover-scale rounded-xl p-6 text-center animate-pulse-glow" style={{ animationDelay: '0.6s' }}>
+            <div className="text-4xl md:text-5xl font-bold font-orbitron gradient-text mb-2">
+              &lt;2s
+            </div>
+            <div className="text-sm text-slate-400 font-rajdhani font-semibold">
+              Avg Response Time
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="space-y-8">
+          <h2 className="text-3xl font-bold text-center gradient-text font-orbitron">
+            Features
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="glass hover-scale rounded-xl p-8 text-center space-y-4"
+                style={{ animationDelay: `${index * 0.2}s` }}
               >
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h4 className="text-xl font-bold text-slate-200 mb-3 font-outfit">
+                <h3 className="text-xl font-bold text-purple-300 font-rajdhani">
                   {feature.title}
-                </h4>
-                <p className="text-sm text-slate-400 font-outfit leading-relaxed">{feature.desc}</p>
-              </motion.div>
+                </h3>
+                <p className="text-slate-400 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Security */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8 }}
-          className="glass-card p-10 text-center border-2 border-purple-500/30"
-        >
-          <div className="text-6xl mb-6">🔒</div>
-          <h2 className="text-3xl font-bold text-slate-200 mb-6 font-outfit">
-            Your Privacy is Safe
+        {/* Tech Stack Section */}
+        <section className="space-y-8">
+          <h2 className="text-3xl font-bold text-center gradient-text font-orbitron">
+            Powered By
           </h2>
-          <p className="text-lg text-slate-400 leading-relaxed font-outfit max-w-3xl mx-auto">
-            SUKI never stores your wallet address or trading data. All analysis runs in
-            real-time using public on-chain data via Helius and DexScreener APIs. Data is
-            discarded after your session. No wallet connection needed — ever.
+          <p className="text-center text-slate-400 font-rajdhani font-semibold">
+            Built with the best tools in Web3 and AI
           </p>
-        </motion.div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {techStack.map((tech, index) => (
+              <div
+                key={index}
+                className="glass rounded-xl p-6 text-center space-y-3 hover-scale cursor-pointer"
+                style={{ opacity: 0.8 }}
+              >
+                <div className="text-4xl font-bold text-purple-400 font-orbitron">
+                  {tech.logo}
+                </div>
+                <div className="text-sm font-rajdhani font-semibold text-slate-300">
+                  {tech.name}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </motion.div>
   );
