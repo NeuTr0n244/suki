@@ -10,8 +10,6 @@ import ScoreCard from '@/components/ScoreCard';
 import FinancialCard from '@/components/FinancialCard';
 import TradesCard from '@/components/TradesCard';
 import AllTradesTable from '@/components/AllTradesTable';
-import SparkleDecoration from '@/components/SparkleDecoration';
-import CyberpunkBackground from '@/components/CyberpunkBackground';
 import HowItWorksPage from '@/components/HowItWorksPage';
 import AboutPage from '@/components/AboutPage';
 import FaqPage from '@/components/FaqPage';
@@ -232,8 +230,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative">
-      {/* <CyberpunkBackground /> */}
-      <SparkleDecoration />
       <Header activeTab={activeTab} onTabChange={handleTabChange} soundEnabled={soundEnabled} onToggleSound={handleToggleSound} />
 
       {/* Main content area - changes based on active tab */}
