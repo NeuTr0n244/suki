@@ -81,6 +81,17 @@ export default function CyberpunkBackground() {
 
   return (
     <>
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="cyberpunk-video-bg"
+      >
+        <source src="/bg-video.mp4" type="video/mp4" />
+      </video>
+
       {/* Layer 1: Base gradient */}
       <div className="cyberpunk-base" />
 
@@ -122,6 +133,18 @@ export default function CyberpunkBackground() {
       <div className="cyberpunk-scanlines" />
 
       <style jsx>{`
+        /* Video Background */
+        .cyberpunk-video-bg {
+          position: fixed;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: -8;
+          opacity: 0.6;
+          pointer-events: none;
+        }
+
         /* Layer 1: Base gradient */
         .cyberpunk-base {
           position: fixed;
