@@ -28,6 +28,10 @@
   padding: 0;
 }
 
+html {
+  background: #0a0612;
+}
+
 body {
   background: transparent;
   color: var(--text-primary);

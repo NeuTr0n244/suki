@@ -141,8 +141,9 @@ export default function CyberpunkBackground() {
           height: 100%;
           object-fit: cover;
           z-index: -8;
-          opacity: 0.6;
+          opacity: 0.8;
           pointer-events: none;
+          background: #0a0612;
         }
 
         /* Layer 1: Base gradient */
@@ -150,7 +151,7 @@ export default function CyberpunkBackground() {
           position: fixed;
           inset: 0;
           z-index: -7;
-          background: radial-gradient(circle at 50% 50%, #1a0a2e 0%, #0a0612 100%);
+          background: radial-gradient(circle at 50% 50%, rgba(26, 10, 46, 0.6) 0%, rgba(10, 6, 18, 0.3) 100%);
           animation: baseShift 10s ease-in-out infinite alternate;
         }
 
