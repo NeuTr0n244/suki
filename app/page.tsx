@@ -227,6 +227,28 @@ export default function Home() {
     const newState = !soundEnabled;
     setSoundEnabledState(newState);
     setSoundEnabled(newState);
+
+    // If muting, stop all audio immediately
+    if (!newState) {
+      console.log('[Page] Muting - stopping all audio');
+
+      // Stop TTS audio
+      import('@/lib/tts').then(({ stopSpeaking }) => {
+        stopSpeaking();
+      });
+
+      // Stop all HTML5 audio elements
+      const audios = document.querySelectorAll('audio');
+      audios.forEach((audio) => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+
+      // Cancel Web Speech API if active
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    }
   };
 
   return (
