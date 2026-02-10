@@ -2,8 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import { formatUsd, formatPercent, formatSol } from '@/lib/format';
+import { getPrimaryLink } from '@/lib/token-info';
 
 interface AllTradesTableProps {
   allTokens: any[];
@@ -55,6 +56,17 @@ export default function AllTradesTable({ allTokens }: AllTradesTableProps) {
     );
   };
 
+  const getSourceBadge = (isPumpFun: boolean) => {
+    if (isPumpFun) {
+      return (
+        <span className="text-xs px-2 py-0.5 rounded bg-pink-500/20 text-pink-400 font-rajdhani font-semibold">PUMP</span>
+      );
+    }
+    return (
+      <span className="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 font-rajdhani font-semibold">DEX</span>
+    );
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -94,37 +106,51 @@ export default function AllTradesTable({ allTokens }: AllTradesTableProps) {
                 PnL (SOL) {sortBy === 'pnl' && (sortDir === 'desc' ? '↓' : '↑')}
               </th>
               <th className="text-right py-2">PnL %</th>
+              <th className="text-right py-2">Source</th>
               <th className="text-right py-2">Status</th>
             </tr>
           </thead>
           <tbody>
-            {displayed.map((token, i) => (
-              <tr
-                key={i}
-                className="border-b border-purple-500/10 hover:bg-white/5 transition-colors"
-                title={`${token.name} (${token.address})`}
-              >
-                <td className="py-3 text-slate-200 max-w-[120px] truncate">
-                  {token.symbol}
-                </td>
-                <td className="text-right text-slate-400">{token.trades}</td>
-                <td className="text-right text-slate-400">{token.totalSolSpent.toFixed(3)}</td>
-                <td className="text-right text-slate-400">{token.totalSolReceived.toFixed(3)}</td>
-                <td
-                  className={`text-right font-bold ${token.pnlSol >= 0 ? 'text-green-400' : 'text-red-400'}`}
-                  title={`~${formatUsd(token.pnlUsd)}`}
+            {displayed.map((token, i) => {
+              const tokenLink = getPrimaryLink(token.address, token.isPumpFun || false);
+
+              return (
+                <tr
+                  key={i}
+                  className="border-b border-purple-500/10 hover:bg-white/5 transition-colors"
+                  title={`${token.name} (${token.address})`}
                 >
-                  {token.pnlSol >= 0 ? '+' : ''}
-                  {token.pnlSol.toFixed(3)}
-                </td>
-                <td
-                  className={`text-right ${token.pnlPercent >= 0 ? 'text-green-400/70' : 'text-red-400/70'}`}
-                >
-                  {formatPercent(token.pnlPercent)}
-                </td>
-                <td className="text-right">{getStatusBadge(token.status, token.isRug)}</td>
-              </tr>
-            ))}
+                  <td className="py-3">
+                    <a
+                      href={tokenLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-200 hover:text-purple-400 transition-colors flex items-center gap-1.5 max-w-[120px]"
+                    >
+                      <span className="truncate">{token.symbol}</span>
+                      <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-50" />
+                    </a>
+                  </td>
+                  <td className="text-right text-slate-400">{token.trades}</td>
+                  <td className="text-right text-slate-400">{token.totalSolSpent.toFixed(3)}</td>
+                  <td className="text-right text-slate-400">{token.totalSolReceived.toFixed(3)}</td>
+                  <td
+                    className={`text-right font-bold ${token.pnlSol >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                    title={`~${formatUsd(token.pnlUsd)}`}
+                  >
+                    {token.pnlSol >= 0 ? '+' : ''}
+                    {token.pnlSol.toFixed(3)}
+                  </td>
+                  <td
+                    className={`text-right ${token.pnlPercent >= 0 ? 'text-green-400/70' : 'text-red-400/70'}`}
+                  >
+                    {formatPercent(token.pnlPercent)}
+                  </td>
+                  <td className="text-right">{getSourceBadge(token.isPumpFun || false)}</td>
+                  <td className="text-right">{getStatusBadge(token.status, token.isRug)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

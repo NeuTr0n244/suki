@@ -1,3 +1,5 @@
+import { batchCheckPumpFun } from './token-info';
+
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 
@@ -265,13 +267,20 @@ export async function getSolPriceUSD(): Promise<number> {
 }
 
 // Transform to app format
-export function transformToAppFormat(analysis: WalletAnalysis, solPrice: number) {
+export async function transformToAppFormat(analysis: WalletAnalysis, solPrice: number) {
   const allTokens: any[] = [];
+
+  // Check which tokens are from Pump.fun
+  const mints = Array.from(analysis.tokens.keys());
+  console.log('[Analysis] Checking Pump.fun tokens...');
+  const pumpFunTokens = await batchCheckPumpFun(mints);
+  console.log(`[Analysis] Found ${Array.from(pumpFunTokens.values()).filter(v => v).length} Pump.fun tokens`);
 
   for (const [mint, tokenData] of analysis.tokens) {
     const pnlSol = (tokenData.solReceived - tokenData.solSpent);
     const pnlUsd = pnlSol * solPrice;
     const pnlPercent = tokenData.solSpent > 0 ? (pnlSol / tokenData.solSpent) * 100 : 0;
+    const isPumpFun = pumpFunTokens.get(mint) || false;
 
     allTokens.push({
       address: mint,
@@ -288,6 +297,7 @@ export function transformToAppFormat(analysis: WalletAnalysis, solPrice: number)
       status: (tokenData.bought - tokenData.sold) > 0 ? 'holding' : 'sold',
       isRug: false,
       rugReason: '',
+      isPumpFun,
     });
   }
 

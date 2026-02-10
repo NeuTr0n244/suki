@@ -19,8 +19,8 @@ export async function GET(req: NextRequest) {
     // Get SOL price for USD conversions
     const solPrice = await getSolPriceUSD();
 
-    // Transform to app format
-    const metrics = transformToAppFormat(analysis, solPrice);
+    // Transform to app format (includes pump.fun check)
+    const metrics = await transformToAppFormat(analysis, solPrice);
     const score = calculateDegenScore(metrics);
     const { title, emoji, desc } = getDegenTitle(score);
 
