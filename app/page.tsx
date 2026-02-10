@@ -217,7 +217,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative">
-      <CyberpunkBackground />
+      {/* <CyberpunkBackground /> */}
       <SparkleDecoration />
       <Header activeTab={activeTab} onTabChange={handleTabChange} />
 

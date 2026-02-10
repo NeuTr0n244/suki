@@ -29,11 +29,11 @@
 }
 
 html {
-  background: #0a0612;
+  background: transparent !important;
 }
 
 body {
-  background: transparent;
+  background: transparent !important;
   color: var(--text-primary);
   font-family: 'Outfit', sans-serif;
   overflow-x: hidden;

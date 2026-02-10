@@ -48,6 +48,26 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${outfit.variable} ${orbitron.variable} ${jetbrainsMono.variable}`}>
       <body className="anime-bg noise antialiased">
+        {/* VIDEO BACKGROUND - FORÇADO */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            objectFit: 'cover',
+            zIndex: -1,
+            opacity: 0.5,
+            pointerEvents: 'none',
+          }}
+        >
+          <source src="/bg-video.mp4" type="video/mp4" />
+        </video>
         {children}
       </body>
     </html>
