@@ -17,7 +17,7 @@ import AboutPage from '@/components/AboutPage';
 import FaqPage from '@/components/FaqPage';
 import SukiFallback from '@/components/SukiFallback';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { speak, isSoundEnabled, setSoundEnabled } from '@/lib/tts';
+import { speak, isSoundEnabled, setSoundEnabled, unlockAudio } from '@/lib/tts';
 import { truncateWallet } from '@/lib/format';
 
 // Dynamically import 3D character (client-side only)
@@ -182,6 +182,9 @@ export default function Home() {
   };
 
   const handleSend = async (text: string) => {
+    // Unlock audio on first user interaction
+    unlockAudio();
+
     // Check if it's a wallet address
     const wallet = detectWallet(text);
 
