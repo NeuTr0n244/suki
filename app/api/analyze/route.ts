@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { analyzeWallet, transformToAppFormat, getSolPriceUSD } from '@/lib/wallet-analysis';
+import { analyzeWalletNew } from '@/lib/wallet-analyzer';
 import { calculateDegenScore, getDegenTitle } from '@/lib/score';
 
 export async function GET(req: NextRequest) {
@@ -7,20 +7,15 @@ export async function GET(req: NextRequest) {
   if (!wallet) return NextResponse.json({ error: 'wallet required' }, { status: 400 });
 
   try {
-    console.log(`[Analyze] Starting analysis for ${wallet.slice(0, 4)}...${wallet.slice(-4)}`);
+    console.log(`[Analyze] Starting NEW analysis for ${wallet.slice(0, 4)}...${wallet.slice(-4)}`);
 
-    // Use new precise wallet analysis
-    const analysis = await analyzeWallet(wallet);
+    // Use new rewritten analyzer
+    const metrics = await analyzeWalletNew(wallet);
 
-    if (!analysis || analysis.totalTokens === 0) {
+    if (!metrics || metrics.totalTokensTraded === 0) {
       return NextResponse.json({ error: 'No trades found for this wallet' }, { status: 404 });
     }
 
-    // Get SOL price for USD conversions
-    const solPrice = await getSolPriceUSD();
-
-    // Transform to app format (includes pump.fun check)
-    const metrics = await transformToAppFormat(analysis, solPrice);
     const score = calculateDegenScore(metrics);
     const { title, emoji, desc } = getDegenTitle(score);
 
