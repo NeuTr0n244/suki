@@ -25,18 +25,21 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SUKI - Your Anime Degen Analyst",
+  title: "SUKI",
   description: "Analyze your Solana wallet trades with SUKI, an AI-powered anime analyst that calculates your Degen Score, tracks PnL, and roasts your trading habits.",
   keywords: ["Solana", "crypto", "trading", "wallet analyzer", "degen score", "PnL tracker"],
   authors: [{ name: "SUKI" }],
+  icons: {
+    icon: "/favicon.png",
+  },
   openGraph: {
-    title: "SUKI - Your Anime Degen Analyst",
+    title: "SUKI",
     description: "Get your Degen Score and analyze your Solana trading patterns with an anime AI assistant.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SUKI - Your Anime Degen Analyst",
+    title: "SUKI",
     description: "Analyze your Solana wallet with SUKI",
   },
 };
