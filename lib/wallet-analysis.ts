@@ -146,12 +146,17 @@ export function analyzeTransactions(transactions: any[], wallet: string): Map<st
 
   console.log(`[Analysis] Analyzing ${transactions.length} transactions...`);
 
-  for (const tx of transactions) {
+  // Filter only SWAP transactions
+  const swaps = transactions.filter(tx => tx.type === 'SWAP');
+  console.log(`[Analysis] Found ${swaps.length} SWAP transactions`);
+
+  for (const tx of swaps) {
     if (!tx.tokenTransfers || tx.tokenTransfers.length === 0) continue;
 
+    // Process each token in this swap
     for (const transfer of tx.tokenTransfers) {
       const mint = transfer.mint;
-      if (!mint || mint === SOL_MINT) continue;
+      if (!mint || mint === SOL_MINT) continue; // Skip SOL itself as a "token"
 
       // Initialize token if not exists
       if (!tokens.has(mint)) {
@@ -172,28 +177,54 @@ export function analyzeTransactions(transactions: any[], wallet: string): Map<st
 
       const tokenData = tokens.get(mint)!;
 
-      // Determine if this is a buy or sell
+      // Determine if this is a buy or sell based on token direction
       const isBuy = transfer.toUserAccount === wallet;
-      const amount = Math.abs(transfer.tokenAmount || 0);
+      const tokenAmount = Math.abs(transfer.tokenAmount || 0);
 
-      // Find corresponding SOL transfer
+      // Find corresponding SOL movement (CRITICAL FIX)
       let solAmount = 0;
+
+      // Check nativeTransfers for SOL movement
       if (tx.nativeTransfers && tx.nativeTransfers.length > 0) {
         for (const nt of tx.nativeTransfers) {
-          if (nt.fromUserAccount === wallet || nt.toUserAccount === wallet) {
-            solAmount = Math.abs(nt.amount || 0) / 1e9;
-            break;
+          if (isBuy) {
+            // User bought token = SOL LEFT wallet (spent)
+            if (nt.fromUserAccount === wallet) {
+              solAmount += (nt.amount || 0) / 1e9;
+            }
+          } else {
+            // User sold token = SOL ENTERED wallet (received)
+            if (nt.toUserAccount === wallet) {
+              solAmount += (nt.amount || 0) / 1e9;
+            }
+          }
+        }
+      }
+
+      // Also check tokenTransfers for WSOL (wrapped SOL)
+      for (const t of tx.tokenTransfers) {
+        if (t.mint === SOL_MINT) {
+          if (isBuy) {
+            // Buying token = WSOL left wallet
+            if (t.fromUserAccount === wallet) {
+              solAmount += Math.abs(t.tokenAmount || 0);
+            }
+          } else {
+            // Selling token = WSOL entered wallet
+            if (t.toUserAccount === wallet) {
+              solAmount += Math.abs(t.tokenAmount || 0);
+            }
           }
         }
       }
 
       if (isBuy) {
-        tokenData.bought += amount;
+        tokenData.bought += tokenAmount;
         tokenData.solSpent += solAmount;
         tokenData.buyTxs++;
         tokenData.avgBuyPrice = tokenData.bought > 0 ? tokenData.solSpent / tokenData.bought : 0;
       } else {
-        tokenData.sold += amount;
+        tokenData.sold += tokenAmount;
         tokenData.solReceived += solAmount;
         tokenData.sellTxs++;
         tokenData.avgSellPrice = tokenData.sold > 0 ? tokenData.solReceived / tokenData.sold : 0;
@@ -357,8 +388,8 @@ export async function analyzeWallet(wallet: string): Promise<WalletAnalysis | nu
       return null;
     }
 
-    // Step 2: Get parsed transactions (limit to first 10k for performance)
-    const signaturesOnly = allSignatures.slice(0, 10000).map(s => s.signature);
+    // Step 2: Get parsed transactions (limit to first 50k for better accuracy)
+    const signaturesOnly = allSignatures.slice(0, 50000).map(s => s.signature);
     const parsedTxs = await getParsedTransactions(signaturesOnly);
 
     // Step 3: Analyze transactions to build token balances
@@ -371,34 +402,32 @@ export async function analyzeWallet(wallet: string): Promise<WalletAnalysis | nu
       getSolPriceUSD(),
     ]);
 
-    // Step 5: Calculate PnL
-    let totalPnlUsd = 0;
-    let totalInvestedUsd = 0;
-    let totalReturnedUsd = 0;
+    // Step 5: Calculate PnL (SIMPLE: SOL Received - SOL Spent)
+    let totalSolSpent = 0;
+    let totalSolReceived = 0;
     let wins = 0;
     let losses = 0;
 
     for (const [mint, tokenData] of tokens) {
-      const currentPrice = currentPrices.get(mint) || 0;
-      const holding = tokenData.bought - tokenData.sold;
+      // Simple PnL: SOL received from selling - SOL spent buying
+      const tokenPnlSol = tokenData.solReceived - tokenData.solSpent;
 
-      // Realized PnL (from sells)
-      const realizedPnlSol = tokenData.solReceived - (tokenData.avgBuyPrice * tokenData.sold);
-      const realizedPnlUsd = realizedPnlSol * solPrice;
+      totalSolSpent += tokenData.solSpent;
+      totalSolReceived += tokenData.solReceived;
 
-      // Unrealized PnL (from holdings)
-      const unrealizedPnlUsd = holding > 0 ? (holding * currentPrice) - (tokenData.avgBuyPrice * holding * solPrice) : 0;
-
-      // Total PnL for this token
-      const tokenPnlUsd = realizedPnlUsd + unrealizedPnlUsd;
-
-      totalPnlUsd += tokenPnlUsd;
-      totalInvestedUsd += tokenData.solSpent * solPrice;
-      totalReturnedUsd += tokenData.solReceived * solPrice;
-
-      if (tokenPnlUsd > 0) wins++;
-      else if (tokenPnlUsd < 0) losses++;
+      if (tokenPnlSol > 0) wins++;
+      else if (tokenPnlSol < 0) losses++;
     }
+
+    // Calculate totals in USD
+    const totalInvestedUsd = totalSolSpent * solPrice;
+    const totalReturnedUsd = totalSolReceived * solPrice;
+    const totalPnlSol = totalSolReceived - totalSolSpent;
+    const totalPnlUsd = totalPnlSol * solPrice;
+
+    console.log(`[Analysis] Total SOL Spent: ${totalSolSpent.toFixed(4)} SOL ($${totalInvestedUsd.toFixed(2)})`);
+    console.log(`[Analysis] Total SOL Received: ${totalSolReceived.toFixed(4)} SOL ($${totalReturnedUsd.toFixed(2)})`);
+    console.log(`[Analysis] Net PnL: ${totalPnlSol.toFixed(4)} SOL ($${totalPnlUsd.toFixed(2)})`);
 
     const totalTrades = Array.from(tokens.values()).reduce((sum, t) => sum + t.buyTxs + t.sellTxs, 0);
     const winRate = wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0;
