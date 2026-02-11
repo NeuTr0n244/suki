@@ -148,24 +148,18 @@ function analyzeTransactions(txs: any[], wallet: string): AnalysisResult {
 
     // Método 2: Usar nativeTransfers + tokenTransfers (fallback)
     if (solOut === 0 && solIn === 0) {
-      // Native SOL transfers
-      for (const nt of (tx.nativeTransfers || [])) {
-        if (nt.fromUserAccount === wallet) {
-          solOut += nt.amount / 1e9;
-        }
-        if (nt.toUserAccount === wallet) {
-          solIn += nt.amount / 1e9;
-        }
-      }
+      // CRÍTICO: Identificar WSOL em tokenTransfers PRIMEIRO (mais confiável)
+      let wsolOut = 0;
+      let wsolIn = 0;
 
       // Token transfers (SOL wrapping/unwrapping + tokens)
       for (const tt of (tx.tokenTransfers || [])) {
         if (tt.mint === SOL_MINT) {
           if (tt.fromUserAccount === wallet) {
-            solOut += tt.tokenAmount;
+            wsolOut += tt.tokenAmount;
           }
           if (tt.toUserAccount === wallet) {
-            solIn += tt.tokenAmount;
+            wsolIn += tt.tokenAmount;
           }
         } else if (tt.fromUserAccount === wallet || tt.toUserAccount === wallet) {
           tokenMint = tt.mint;
@@ -184,9 +178,27 @@ function analyzeTransactions(txs: any[], wallet: string): AnalysisResult {
         }
       }
 
+      // Se tem WSOL, usar APENAS WSOL (mais confiável)
+      if (wsolOut > 0 || wsolIn > 0) {
+        solOut = wsolOut;
+        solIn = wsolIn;
+      } else {
+        // Se não tem WSOL, usar nativeTransfers
+        for (const nt of (tx.nativeTransfers || [])) {
+          if (nt.fromUserAccount === wallet) {
+            solOut += nt.amount / 1e9;
+          }
+          if (nt.toUserAccount === wallet) {
+            solIn += nt.amount / 1e9;
+          }
+        }
+      }
+
       // Subtrair fee (geralmente 0.000005 SOL)
       const fee = (tx.fee || 5000) / 1e9;
-      solOut = Math.max(0, solOut - fee);
+      if (solOut > 0) {
+        solOut = Math.max(0, solOut - fee);
+      }
     }
 
     if (debugCount <= 3) {
