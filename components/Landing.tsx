@@ -235,12 +235,12 @@ export default function Landing() {
             <span className="text-slate-500 font-outfit">— Your Anime Degen Analyst</span>
           </div>
           <a
-            href="https://twitter.com/SukiDegen"
+            href="https://x.com/SukiAnalyst"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block text-purple-400 hover:text-purple-300 transition-colors font-outfit"
           >
-            Twitter: @SukiDegen
+            X (Twitter): @SukiAnalyst
           </a>
           <div className="border-t border-purple-500/10 pt-6 text-xs text-slate-500 font-mono space-y-2">
             <p>© 2026 SUKI. Not financial advice. DYOR.</p>

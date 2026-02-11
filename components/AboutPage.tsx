@@ -34,7 +34,9 @@ export default function AboutPage() {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <a
-              href="#"
+              href="https://x.com/SukiAnalyst"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600
                        hover:from-purple-500 hover:to-pink-500 transition-all duration-300
                        text-white font-bold text-lg text-center hover:scale-105
@@ -46,7 +48,9 @@ export default function AboutPage() {
             </a>
 
             <a
-              href="#"
+              href="https://x.com/i/communities/2021718673048973603"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600
                        hover:from-pink-500 hover:to-purple-500 transition-all duration-300
                        text-white font-bold text-lg text-center hover:scale-105
