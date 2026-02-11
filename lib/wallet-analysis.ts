@@ -150,8 +150,17 @@ export function analyzeTransactions(transactions: any[], wallet: string): Map<st
   const swaps = transactions.filter(tx => tx.type === 'SWAP');
   console.log(`[Analysis] Found ${swaps.length} SWAP transactions`);
 
+  let debugCount = 0;
   for (const tx of swaps) {
     if (!tx.tokenTransfers || tx.tokenTransfers.length === 0) continue;
+
+    // DEBUG: Log first 3 swaps completely
+    if (debugCount < 3) {
+      console.log(`\n[DEBUG SWAP ${debugCount + 1}] Type: ${tx.type}`);
+      console.log(`[DEBUG] tokenTransfers count: ${tx.tokenTransfers.length}`);
+      console.log(`[DEBUG] nativeTransfers count: ${tx.nativeTransfers?.length || 0}`);
+      debugCount++;
+    }
 
     // Process each token in this swap
     for (const transfer of tx.tokenTransfers) {
@@ -190,12 +199,16 @@ export function analyzeTransactions(transactions: any[], wallet: string): Map<st
           if (isBuy) {
             // User bought token = SOL LEFT wallet (spent)
             if (nt.fromUserAccount === wallet) {
-              solAmount += (nt.amount || 0) / 1e9;
+              const amount = (nt.amount || 0) / 1e9;
+              solAmount += amount;
+              if (debugCount <= 3) console.log(`[DEBUG] BUY: Found native SOL leaving wallet: ${amount.toFixed(6)} SOL`);
             }
           } else {
             // User sold token = SOL ENTERED wallet (received)
             if (nt.toUserAccount === wallet) {
-              solAmount += (nt.amount || 0) / 1e9;
+              const amount = (nt.amount || 0) / 1e9;
+              solAmount += amount;
+              if (debugCount <= 3) console.log(`[DEBUG] SELL: Found native SOL entering wallet: ${amount.toFixed(6)} SOL`);
             }
           }
         }
@@ -207,15 +220,23 @@ export function analyzeTransactions(transactions: any[], wallet: string): Map<st
           if (isBuy) {
             // Buying token = WSOL left wallet
             if (t.fromUserAccount === wallet) {
-              solAmount += Math.abs(t.tokenAmount || 0);
+              const amount = Math.abs(t.tokenAmount || 0);
+              solAmount += amount;
+              if (debugCount <= 3) console.log(`[DEBUG] BUY: Found WSOL leaving wallet: ${amount.toFixed(6)} SOL`);
             }
           } else {
             // Selling token = WSOL entered wallet
             if (t.toUserAccount === wallet) {
-              solAmount += Math.abs(t.tokenAmount || 0);
+              const amount = Math.abs(t.tokenAmount || 0);
+              solAmount += amount;
+              if (debugCount <= 3) console.log(`[DEBUG] SELL: Found WSOL entering wallet: ${amount.toFixed(6)} SOL`);
             }
           }
         }
+      }
+
+      if (debugCount <= 3) {
+        console.log(`[DEBUG] Token ${mint.slice(0, 8)}... ${isBuy ? 'BUY' : 'SELL'}: ${tokenAmount.toFixed(4)} tokens for ${solAmount.toFixed(6)} SOL`);
       }
 
       if (isBuy) {
@@ -235,6 +256,20 @@ export function analyzeTransactions(transactions: any[], wallet: string): Map<st
   }
 
   console.log(`[Analysis] Found ${tokens.size} unique tokens`);
+
+  // DEBUG: Show first 5 tokens with their totals
+  let tokenDebugCount = 0;
+  console.log('\n[DEBUG] First 5 tokens summary:');
+  for (const [mint, data] of tokens) {
+    if (tokenDebugCount >= 5) break;
+    console.log(`[DEBUG] Token ${mint.slice(0, 8)}...:`);
+    console.log(`  - SOL Spent: ${data.solSpent.toFixed(6)} SOL`);
+    console.log(`  - SOL Received: ${data.solReceived.toFixed(6)} SOL`);
+    console.log(`  - Buy TXs: ${data.buyTxs}, Sell TXs: ${data.sellTxs}`);
+    console.log(`  - PnL: ${(data.solReceived - data.solSpent).toFixed(6)} SOL`);
+    tokenDebugCount++;
+  }
+
   return tokens;
 }
 
